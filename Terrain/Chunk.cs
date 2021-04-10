@@ -43,7 +43,7 @@ public class Chunk : MeshInstance
 
         mesht.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles,new Godot.Collections.Array(arr));
         this.Mesh = mesht;
-        this.Mesh.SurfaceSetMaterial(0,ResourceLoader.Load("terrain.tres") as Material);
+        this.Mesh.SurfaceSetMaterial(0,ResourceLoader.Load("Terrain/terrain.tres") as Material);
     }
 
     public void ConstructMesh(out Vector3[] vertices, out int[] triangles,out Vector3[] vertexNormals)
