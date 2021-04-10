@@ -1,0 +1,53 @@
+[gd_resource type="ShaderMaterial" load_steps=5 format=2]
+
+[ext_resource path="res://grass.png" type="Texture" id=1]
+[ext_resource path="res://gravel.jpg" type="Texture" id=2]
+[ext_resource path="res://stone.jpg" type="Texture" id=3]
+
+[sub_resource type="Shader" id=1]
+code = "shader_type spatial;
+uniform float scale;
+uniform sampler2D topTexture;
+uniform sampler2D sideTexture;
+uniform sampler2D botTexture;
+
+varying vec3 WorldVertex;
+varying vec3 WorldNormal;
+void vertex()
+{
+	WorldVertex = VERTEX;
+	WorldNormal = NORMAL;
+}
+
+vec4 triplanarWeights()
+{	
+	vec3 w = abs(WorldNormal);
+	float sum = w.x + w.y + w.z;
+	w= w/vec3(sum,sum,sum);
+	vec4 res;
+	res.xyz = w;
+	res.y = res.y*step(0.0,WorldNormal.y);
+	res.w = (w.y/sum) * (1.0 - step(0.0,WorldNormal.y));
+	return res;
+}
+
+void fragment()
+{
+	vec3 top = texture(topTexture, WorldVertex.xz).rgb;
+	vec3 side1 = texture(sideTexture, WorldVertex.xy).rgb;
+	vec3 side2 = texture(sideTexture, WorldVertex.zy).rgb;
+	vec3 bot = texture(botTexture, WorldVertex.xz).rgb;
+	
+	vec4 w = triplanarWeights();
+	
+	ALBEDO = (top*w.yyy)+(side1*w.zzz)+(side2*w.xxx)+(bot*w.www);
+	
+	
+}"
+
+[resource]
+shader = SubResource( 1 )
+shader_param/scale = 5.0
+shader_param/topTexture = ExtResource( 1 )
+shader_param/sideTexture = ExtResource( 2 )
+shader_param/botTexture = ExtResource( 3 )
