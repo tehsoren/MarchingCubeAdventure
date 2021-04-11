@@ -4,7 +4,6 @@
 [ext_resource path="res://Textures/gravel.jpg" type="Texture" id=2]
 [ext_resource path="res://Textures/stone.jpg" type="Texture" id=3]
 
-
 [sub_resource type="Shader" id=1]
 code = "shader_type spatial;
 uniform float scale;

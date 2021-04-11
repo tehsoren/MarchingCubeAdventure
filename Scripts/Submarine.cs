@@ -23,6 +23,8 @@ public class Submarine : Spatial
     {
         velocity = new Vector3();
         guide = GetNode("guide") as Spatial;
+        //rotY = Mathf.Pi;
+
         
 
     }

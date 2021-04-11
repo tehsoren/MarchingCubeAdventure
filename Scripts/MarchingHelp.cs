@@ -329,7 +329,7 @@ public static class MarchingHelp
         return cubeIndex;
     }
 
-    public static Vector3 Interp(Vector3 a,Vector3 b, float aVal, float bVal)
+    public static Vector3 Interp(float threshold,Vector3 a,Vector3 b, float aVal, float bVal)
     {
         return (a+b)/2;
     }
@@ -355,7 +355,7 @@ public static class MarchingHelp
                 verticIndexes[i] = vertices.Count;
                 var v0 = cornerOffsets[EdgeConnection[i,0]];
                 var v1 = cornerOffsets[EdgeConnection[i,1]];
-                Vector3 newVertex = Interp(v0,v1,0.5f,0.5f);
+                Vector3 newVertex = Interp(threshold,v0,v1,0.5f,0.5f);
                 vertices.Add(newVertex+offset);
             }
         }

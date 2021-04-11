@@ -9,31 +9,39 @@ public class Chunk : MeshInstance
 
     public override void _Ready()
     {
+
+
+    }
+
+    public void ConstructChunk(int size,int chunkX,int chunkY,int chunkZ)
+    {
         OpenSimplexNoise osn = new OpenSimplexNoise();
         osn.Period = 16;
         Vector3[] vList;
         int[] tList;
         Vector3[] nList;
-        vals = new float[30,30,30];
+        vals = new float[size+1,size+1,size+1];
         
-        for (int x = 1; x < 28; x++)
+        var xOffset = size*chunkX;
+        var yOffset = size*chunkY;
+        var zOffset = size*chunkZ;
+        for (int x = 0; x < size+1; x++)
         {
-            for (int y = 1; y < 28; y++)
+            for (int y = 0; y < size+1; y++)
             {
-                for (int z = 1; z < 28; z++)
+                for (int z = 0; z < size+1; z++)
                 {
-                    vals[x,y,z] = osn.GetNoise3d(x,y,z);      
+                    vals[x,y,z] = osn.GetNoise3d(x+xOffset,y+yOffset,z+zOffset);      
                 }
             }
             
         }
-        ConstructMesh(out vList,out tList,out nList);
+        ConstructMesh(size,xOffset,yOffset,zOffset,out vList,out tList,out nList);
         ConstructArrayMesh(vList,tList,nList);
-
     }
 
 
-    public void ConstructArrayMesh(Vector3[] vertices, int[] triangles, Vector3[] normals)
+    private void ConstructArrayMesh(Vector3[] vertices, int[] triangles, Vector3[] normals)
     {
         var mesht = new ArrayMesh();
         object[] arr = new object[(int)Mesh.ArrayType.Max];
@@ -46,20 +54,20 @@ public class Chunk : MeshInstance
         this.Mesh.SurfaceSetMaterial(0,ResourceLoader.Load("Terrain/terrain.tres") as Material);
     }
 
-    public void ConstructMesh(out Vector3[] vertices, out int[] triangles,out Vector3[] vertexNormals)
+    private void ConstructMesh(int size,int xOffset,int yOffset,int zOffset,out Vector3[] vertices, out int[] triangles,out Vector3[] vertexNormals)
     {
         List<Vector3> vList = new List<Vector3>();
         List<int> tList = new List<int>();
         
 
-        for (int x = 0; x < 29; x++)
+        for (int x = 0; x < size; x++)
         {
-            for (int y = 0; y < 29; y++)
+            for (int y = 0; y < size; y++)
             {
-                for (int z = 0; z < 29; z++)
+                for (int z = 0; z < size; z++)
                 {
                     var t = GetVals(x,y,z);
-                    MarchingHelp.March(t,new Vector3(x,y,z),0.0f,ref tList,ref vList);
+                    MarchingHelp.March(t,new Vector3(x+xOffset,y+yOffset,z+zOffset),0.0f,ref tList,ref vList);
                 }
             }
             

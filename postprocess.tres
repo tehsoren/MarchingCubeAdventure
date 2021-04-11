@@ -1,0 +1,45 @@
+[gd_resource type="ShaderMaterial" load_steps=4 format=2]
+
+[sub_resource type="Shader" id=1]
+code = "shader_type spatial;
+render_mode unshaded;
+
+uniform sampler2D gradient: hint_albedo;
+uniform float fog_intensity:  hint_range(0.0, 1.0);
+uniform float fog_amount: hint_range(0.0, 1.0);
+
+void vertex() {
+	POSITION = vec4(VERTEX,	1.0);
+}
+
+void fragment() {
+	vec4 original = texture(SCREEN_TEXTURE, SCREEN_UV);
+	
+	float depth = texture(DEPTH_TEXTURE, SCREEN_UV).x;
+	vec3 ndc= vec3(SCREEN_UV, depth) * 2.0 - 1.0;
+	vec4 view = INV_PROJECTION_MATRIX* vec4(ndc, 1.0);
+	view.xyz /= view.w;
+	depth = -view.z;
+	
+	float fog = depth * fog_amount;
+	
+	vec4 fog_color = texture(gradient, vec2(fog, 0.0));
+	if (depth > 1.0)
+		ALBEDO =  original.rgb;//mix(original.rgb, fog_color.rgb, fog_color.a * fog_intensity);
+	else
+		ALBEDO = original.rgb;
+}"
+
+[sub_resource type="Gradient" id=2]
+offsets = PoolRealArray( 0.181208, 0.513423, 0.919463, 1 )
+colors = PoolColorArray( 0.00784314, 0.176471, 0.227451, 0, 0.0117647, 0.317647, 0.411765, 0.745098, 0.0579834, 0.0848913, 0.371094, 1, 0, 0, 0, 1 )
+
+[sub_resource type="GradientTexture" id=3]
+gradient = SubResource( 2 )
+width = 10
+
+[resource]
+shader = SubResource( 1 )
+shader_param/fog_intensity = 0.957
+shader_param/fog_amount = 0.027
+shader_param/gradient = SubResource( 3 )
