@@ -2,10 +2,13 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using Godot.Collections;
+using System.Linq;
 
 public class Chunk : MeshInstance
 {
     float[,,] vals;
+
+    TerrainGenerator terrainGen;
 
     public override void _Ready()
     {
@@ -13,32 +16,41 @@ public class Chunk : MeshInstance
 
     }
 
-    public void ConstructChunk(int size,int chunkX,int chunkY,int chunkZ)
+    public void SetGenerator(TerrainGenerator terrainGen)
     {
-        OpenSimplexNoise osn = new OpenSimplexNoise();
-        osn.Period = 16;
-        Vector3[] vList;
-        int[] tList;
-        Vector3[] nList;
+        this.terrainGen = terrainGen;
+    }
+
+    private void GenerateChunkValues(int size,float xOffset,float yOffset,float zOffset)
+    {
         vals = new float[size+1,size+1,size+1];
-        
-        var xOffset = size*chunkX;
-        var yOffset = size*chunkY;
-        var zOffset = size*chunkZ;
         for (int x = 0; x < size+1; x++)
         {
             for (int y = 0; y < size+1; y++)
             {
                 for (int z = 0; z < size+1; z++)
-                {
-                    vals[x,y,z] = osn.GetNoise3d(x+xOffset,y+yOffset,z+zOffset);      
+                {    
+                    vals[x,y,z] = terrainGen.GetValue(x+xOffset,y+yOffset,z+zOffset);
                 }
-            }
-            
+            }    
         }
+    }
+
+    public void ConstructChunk(int size,int chunkX,int chunkY,int chunkZ)
+    {
+        
+        var xOffset = size*chunkX;
+        var yOffset = size*chunkY;
+        var zOffset = size*chunkZ;
+        GenerateChunkValues(size,xOffset,yOffset,zOffset);
+        Vector3[] vList;
+        int[] tList;
+        Vector3[] nList;
         ConstructMesh(size,xOffset,yOffset,zOffset,out vList,out tList,out nList);
         ConstructArrayMesh(vList,tList,nList);
     }
+
+
 
 
     private void ConstructArrayMesh(Vector3[] vertices, int[] triangles, Vector3[] normals)
@@ -70,18 +82,19 @@ public class Chunk : MeshInstance
                     MarchingHelp.March(t,new Vector3(x+xOffset,y+yOffset,z+zOffset),0.0f,ref tList,ref vList);
                 }
             }
-            
         }
 
-
+        
 
         vertices = vList.ToArray();
+        vertices = vertices.Select(x => x*terrainGen.scale).ToArray();
+        //vertices.
         triangles = tList.ToArray();
         GenerateNormals(vertices,triangles,out vertexNormals);
 
     }
 
-    public void GenerateNormals(Vector3[] vertices,int[] triangles, out Vector3[] vertexNormals)
+    private void GenerateNormals(Vector3[] vertices,int[] triangles, out Vector3[] vertexNormals)
     {
         List<Vector3> faceNormals = new List<Vector3>();
         vertexNormals = new Vector3[vertices.Length];

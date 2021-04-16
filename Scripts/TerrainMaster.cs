@@ -1,6 +1,6 @@
 using Godot;
 using System;
-
+using System.Collections.Generic;
 public class TerrainMaster : Node
 {
     // Declare member variables here. Examples:
@@ -8,27 +8,85 @@ public class TerrainMaster : Node
     // private string b = "text";
     Submarine sub;
     Reference chunkScript;
+    Dictionary<Vector3,Chunk> chunks;
+
+    TerrainGenerator terrainGen;
+
+    int chunkSize = 16;
+    int radius = 2;
+    int graceRadius = 5;
+
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
         sub = GetNode("/root/Spatial/Sub") as Submarine;
         chunkScript = ResourceLoader.Load("res://Terrain/Chunk.cs");
-        //CreateChunk(0,0);
-        //CreateChunk(0,1);
-        for (int i = 0; i < 5; i++)
+
+        chunks = new Dictionary<Vector3, Chunk>();
+
+        terrainGen = new TerrainGenerator();
+        terrainGen.init();
+
+    }
+
+//  // Called every frame. 'delta' is the elapsed time since the previous frame.
+    public override void _Process(float delta)
+    {
+        
+        SpawnChunks();
+        CleanChunks();
+    }
+
+    public void SpawnChunks()
+    {
+        var k = false;
+        var subChunkPos = (sub.Transform.origin / chunkSize).Floor();
+        var sx = (int)subChunkPos.x;
+        var sz = (int)subChunkPos.z;
+        for (int x = sx-radius; x < sx+radius+1; x++)
         {
-            for (int j = 0; j < 5; j++)
+            for (int y = 0; y < 4; y++)
             {
-                CreateChunk(i,0,j);
+                for (int z = sz-radius; z < sz+radius+1; z++)
+                {
+                    if(chunks.ContainsKey(new Vector3(x,y,z) ))
+                    {
+                       continue;
+                    }
+                    else
+                    {
+                        CreateChunk(x,y,z);
+                        k = true;
+                        break;
+                    }      
+                }
+                if(k)
+                    break;
             }
         }
     }
 
-//  // Called every frame. 'delta' is the elapsed time since the previous frame.
-//  public override void _Process(float delta)
-//  {
-//      
-//  }
+    public void CleanChunks()
+    {
+        var subChunkPos = (sub.Transform.origin / chunkSize);
+        List<Vector3> toRelease = new List<Vector3>();
+        foreach (Vector3 pos in chunks.Keys)
+        {
+            var t = (pos - subChunkPos);
+            t.y = 0;
+            if(t.Length() > graceRadius)
+            {
+                toRelease.Add(pos);
+            }
+        }
+
+        foreach (var key in toRelease)
+        {
+            chunks[key].QueueFree();
+            chunks.Remove(key);
+        }
+
+    }
 
     public void CreateChunk(int x, int y,int z)
     {
@@ -36,7 +94,9 @@ public class TerrainMaster : Node
         var id = newChunk.GetInstanceId();
         newChunk.SetScript(chunkScript);
         Chunk chunk = GD.InstanceFromId(id) as Chunk;
-        chunk.ConstructChunk(16,x,y,z);
+        chunk.SetGenerator(terrainGen);
+        chunk.ConstructChunk(chunkSize,x,y,z);
         AddChild(chunk);
+        chunks.Add(new Vector3(x,y,z),chunk);
     }
 }
