@@ -7,7 +7,7 @@ render_mode unshaded;
 uniform sampler2D gradient: hint_albedo;
 uniform float fog_intensity:  hint_range(0.0, 1.0);
 uniform float fog_amount: hint_range(0.0, 1.0);
-
+uniform vec4 color: hint_color;
 void vertex() {
 	POSITION = vec4(VERTEX,	1.0);
 }
@@ -21,13 +21,22 @@ void fragment() {
 	view.xyz /= view.w;
 	depth = -view.z;
 	
-	float fog = depth * fog_amount;
+	// world pos
+	vec3 wPos = (CAMERA_MATRIX * vec4(view.xyz,1)).xyz;
+
 	
-	vec4 fog_color = texture(gradient, vec2(fog, 0.0));
-	if (depth > 1.0)
-		ALBEDO =  original.rgb;//mix(original.rgb, fog_color.rgb, fog_color.a * fog_intensity);
-	else
-		ALBEDO = original.rgb;
+	//Vignette - circle/oval
+	vec2 screenUV0 = SCREEN_UV*2.0-vec2(1.0,1.0);
+	float centDist = clamp(abs(length(screenUV0)),0.0,1.0);
+	
+	vec3 col = original.rgb;
+	//vec3 colg = textureGrad()
+	//col = mix(col,color.rgb,depth/30.0); //Fog
+	//col = mix(col,vec3(0.0,0.0,0.0),centDist);//vignette
+	//col = mix(vec3(0.0),col,clamp(wPos.y,0.0,40.0)/40.0);//world height
+	ALBEDO = col;
+	//ALPHA = color.a;
+
 }"
 
 [sub_resource type="Gradient" id=2]
@@ -42,4 +51,5 @@ width = 10
 shader = SubResource( 1 )
 shader_param/fog_intensity = 0.957
 shader_param/fog_amount = 0.027
+shader_param/color = Color( 0.0862745, 0.0509804, 0.235294, 1 )
 shader_param/gradient = SubResource( 3 )

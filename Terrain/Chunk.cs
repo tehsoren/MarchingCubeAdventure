@@ -87,8 +87,7 @@ public class Chunk : MeshInstance
         
 
         vertices = vList.ToArray();
-        vertices = vertices.Select(x => x*terrainGen.scale).ToArray();
-        //vertices.
+        //vertices = vertices.Select(x => x*terrainGen.scale).ToArray(); // scale mesh size
         triangles = tList.ToArray();
         GenerateNormals(vertices,triangles,out vertexNormals);
 
