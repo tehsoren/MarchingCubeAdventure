@@ -4,25 +4,21 @@ using System.Collections.Generic;
 
 public class FloraController
 {
-    List<Flora> floras;
+    List<IFlora> floras;
     List<Mesh> meshes;
-
 
     public FloraController()
     {
-        floras = new List<Flora>();
+        floras = new List<IFlora>();
         meshes = new List<Mesh>();
-
-        AddNewFlora("hej",90,-90);
-        AddNewFlora("b",90,-90);
+        TempAddNewFloras();
     }
 
-
-    private void AddNewFlora(string floraName, float maxAngle,float minAngle)
+    private void TempAddNewFloras()
     {
-        Flora newFlora = new Flora(floraName,maxAngle,minAngle);
+        IFlora newFlora = new ExampleFlora(90,-90);
         floras.Add(newFlora);
-        meshes.Add(null);
+        meshes.Add(newFlora.GetMesh());
     }
 
     public List<int> GetPossibleFlora(float normalHeight)
@@ -31,7 +27,7 @@ public class FloraController
 
         for (int i = 0; i < floras.Count; i++)
         {
-            if(normalHeight >= floras[i].minAngleSin && normalHeight <= floras[i].maxAngleSin)
+            if(floras[i].IsValidSlope(normalHeight))
             {
                 possibleFlora.Add(i);
             }
@@ -53,22 +49,6 @@ public class FloraController
         }
 
     }
-
-
-    private struct Flora
-    {
-        public string modelName;
-        public float maxAngleSin;
-        public float minAngleSin;
-
-        public Flora(string modelName, float maxAngle, float minAngle)
-        {
-            this.modelName = modelName;
-            this.maxAngleSin = Mathf.Sin(Mathf.Deg2Rad(maxAngle));
-            this.minAngleSin = Mathf.Sin(Mathf.Deg2Rad(minAngle));
-        }
-    }
-
 
 }
 

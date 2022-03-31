@@ -8,7 +8,7 @@ public class Chunk : MeshInstance
 {
 	float[,,] vals;
 
-	TerrainGenerator terrainGen;
+	ITerrainGenerator terrainGen;
     FloraController floraController;
 	int faunaCount = 1;
 	public int x,y,z;
@@ -18,7 +18,7 @@ public class Chunk : MeshInstance
 
 	}
 
-	public void SetGenerator(TerrainGenerator terrainGen,FloraController fc)
+	public void SetGenerator(ITerrainGenerator terrainGen,FloraController fc)
 	{
 		this.terrainGen = terrainGen;
         this.floraController = fc;

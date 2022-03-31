@@ -1,0 +1,47 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=2]
+
+[sub_resource type="Shader" id=1]
+code = "shader_type spatial;
+render_mode unshaded;
+
+uniform float stalkWidth;
+uniform float branchWidth;
+
+const float branchFrequency = 4f;
+const float plantHeight = 10f;
+
+void vertex() {
+	//POSITION = vec4(VERTEX,	1.0);
+	VERTEX.y = VERTEX.y *plantHeight;
+}
+
+void fragment() {
+	
+	float baseWorldHeight = 2f;
+	
+	vec4 original = texture(SCREEN_TEXTURE, SCREEN_UV);
+
+	// world pos
+	vec3 wPos = (CAMERA_MATRIX * vec4(VERTEX,1)).xyz;
+	// clamp -height 0
+	float branchDist = abs(sin((wPos.y)*branchFrequency));
+
+	float branch = step(branchDist,branchWidth);
+	float removebottomBranches = step(0f,wPos.y-baseWorldHeight-(3.14/branchFrequency));
+	branch = branch * removebottomBranches;
+	
+	float stalkDist = abs(UV.x -0.5)*2f;
+	float stalk = step(stalkDist,stalkWidth);
+	
+	float temp = max(stalk,branch);
+	vec3 col = vec3(0f,1.0,0.0)* temp;//sin(wPos.y);
+	ALBEDO = col;
+	ALPHA = temp;
+	//ALPHA = color.a;
+
+}"
+
+[resource]
+shader = SubResource( 1 )
+shader_param/stalkWidth = 0.5
+shader_param/branchWidth = 0.5

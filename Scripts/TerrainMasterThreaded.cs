@@ -10,11 +10,17 @@ public class TerrainMasterThreaded : Node
     ConcurrentDictionary<Vector3,Chunk> chunks;
 
     System.Threading.Thread thread;
-    TerrainGenerator terrainGen;
+    ITerrainGenerator terrainGen;
     FloraController floraController;
     int chunkSize = 16;
     int radius = 2;
     int graceRadius = 5;
+
+    float destroyRadius = 8f;
+    float hideRadius    = 6f;
+    float createRadius  = 5f;
+    float hideFloraRadius = 5f;
+    
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -24,8 +30,9 @@ public class TerrainMasterThreaded : Node
 
         chunks = new ConcurrentDictionary<Vector3, Chunk>();
     
-        terrainGen = new TerrainGenerator();
-        terrainGen.init();
+        TerrainGenerator newTerrainGenerator = new TerrainGenerator();
+        newTerrainGenerator.init();
+        terrainGen = newTerrainGenerator;
 
         floraController = new FloraController();
 
@@ -95,6 +102,10 @@ public class TerrainMasterThreaded : Node
             if(t.Length() > graceRadius)
             {
                 toRelease.Add(pos);
+            }
+            else
+            {
+                var chunkDir = (pos+new Vector3(0.5f,0.5f,0.5f))-subChunkPos;
             }
         }
 

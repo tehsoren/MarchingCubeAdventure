@@ -383,7 +383,3 @@ public static class MarchingHelp
     }
 
 }
-
-//brugte edge vertices Vector3 pos
-//brugte edge vertices liste index -1 hvis ikke added
-//gå igennem tritable og add index fra forrige liste til trianglelist

@@ -3,9 +3,7 @@ using System;
 
 public class Submarine : Spatial
 {
-    // Declare member variables here. Examples:
-    // private int a = 2;
-    // private string b = "text";
+
     float speed = 20f;
     
     Vector3 velocity;
@@ -23,7 +21,6 @@ public class Submarine : Spatial
     {
         velocity = new Vector3();
         guide = GetNode("guide") as Spatial;
-        //rotY = Mathf.Pi;
 
         
 
@@ -39,8 +36,7 @@ public class Submarine : Spatial
         if(Input.IsActionPressed("ui_down"))
             dir = -1;
         Translate(-aim.z*dir*speed*delta);
-        var vec = -aim.z;//*dir;
-        //Transform.Translated(vec*5);
+        var vec = -aim.z;
         Transform = Transform.Orthonormalized();
 
         if(Input.IsActionJustPressed("ui_cancel"))
