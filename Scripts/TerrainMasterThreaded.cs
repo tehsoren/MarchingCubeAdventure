@@ -11,7 +11,7 @@ public class TerrainMasterThreaded : Node
 
     System.Threading.Thread thread;
     TerrainGenerator terrainGen;
-
+    FloraController floraController;
     int chunkSize = 16;
     int radius = 2;
     int graceRadius = 5;
@@ -26,6 +26,9 @@ public class TerrainMasterThreaded : Node
     
         terrainGen = new TerrainGenerator();
         terrainGen.init();
+
+        floraController = new FloraController();
+
 
         StartChunkGenThread();
 
@@ -113,12 +116,12 @@ public class TerrainMasterThreaded : Node
         newChunk.SetScript(chunkScript);
         Chunk chunk = GD.InstanceFromId(id) as Chunk;
 
-        chunk.SetGenerator(terrainGen);
+        chunk.SetGenerator(terrainGen,floraController);
         chunk.ConstructChunk(chunkSize,x,y,z);
         chunk.x = x;
         chunk.y = y;
         chunk.z = z;
-        
+        chunk.Name = x +", "+y+", "+z;
         AddChild(chunk);
         chunks.TryAdd(new Vector3(x,y,z),chunk);
         return chunk;

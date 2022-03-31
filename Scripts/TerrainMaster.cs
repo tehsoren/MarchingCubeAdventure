@@ -94,7 +94,7 @@ public class TerrainMaster : Node
         var id = newChunk.GetInstanceId();
         newChunk.SetScript(chunkScript);
         Chunk chunk = GD.InstanceFromId(id) as Chunk;
-        chunk.SetGenerator(terrainGen);
+        chunk.SetGenerator(terrainGen, new FloraController());
         chunk.ConstructChunk(chunkSize,x,y,z);
         AddChild(chunk);
         chunks.Add(new Vector3(x,y,z),chunk);
