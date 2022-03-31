@@ -334,7 +334,6 @@ public static class MarchingHelp
         float w = (threshold - aVal) /(bVal-aVal);
         
         return a+w*(b-a);
-        //return (a+b)/2;
     }
 
     public static void March(float[] cubeVals,Vector3 offset,float threshold,ref List<int> triangles,ref List<Vector3> vertices)

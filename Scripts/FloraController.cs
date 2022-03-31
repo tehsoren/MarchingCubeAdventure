@@ -17,8 +17,15 @@ public class FloraController
     private void TempAddNewFloras()
     {
         IFlora newFlora = new ExampleFlora(90,-90);
-        floras.Add(newFlora);
-        meshes.Add(newFlora.GetMesh());
+        AddNewFlora(newFlora);
+        newFlora = new ExampleFloraCapsule(90,-90);
+        AddNewFlora(newFlora);
+    }
+    
+    private void AddNewFlora(IFlora flora)
+    {
+        floras.Add(flora);
+        meshes.Add(flora.GetMesh());
     }
 
     public List<int> GetPossibleFlora(float normalHeight)

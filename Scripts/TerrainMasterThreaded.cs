@@ -56,7 +56,7 @@ public class TerrainMasterThreaded : Node
     }
 
 
-    public void ChunkGenThreadFunc(object data)
+    private void ChunkGenThreadFunc(object data)
     {
         var tm = (TerrainMasterThreaded)data;
         while (true)
@@ -66,7 +66,7 @@ public class TerrainMasterThreaded : Node
 
     }
 
-    public Chunk CreateNewChunk()
+    private Chunk CreateNewChunk()
     {
         var subChunkPos = (sub.Transform.origin / chunkSize).Floor();
         var sx = (int)subChunkPos.x;
@@ -91,7 +91,7 @@ public class TerrainMasterThreaded : Node
         return null;
     }
 
-    public void CleanChunks()
+    private void CleanChunks()
     {
         var subChunkPos = (sub.Transform.origin / chunkSize);
         List<Vector3> toRelease = new List<Vector3>();
@@ -120,7 +120,7 @@ public class TerrainMasterThreaded : Node
 
     }
 
-    public Chunk CreateChunk(int x, int y,int z)
+    private Chunk CreateChunk(int x, int y,int z)
     {
         MeshInstance newChunk = new MeshInstance();
         var id = newChunk.GetInstanceId();

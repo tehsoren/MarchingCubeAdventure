@@ -204,7 +204,7 @@ public class Chunk : MeshInstance
 			t = t.Translated(vertices[i]);
 			var tar = vertices[i]+normals[i];
 			var rbasis = t.LookingAt(tar,Vector3.Up).basis;
-        	t.basis= rbasis;//Transform.basis.Orthonormalized().Slerp(rbasis,1);
+        	t.basis= rbasis;
 			
             mm.SetInstanceTransform(ii,t);
             ii++;
